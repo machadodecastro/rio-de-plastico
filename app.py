@@ -6,8 +6,8 @@ import streamlit as st
 from PIL import Image
 from ultralytics import YOLO
 
-st.set_page_config(layout="wide", page_title="Plastic in River")
-st.write("# Detect whether there is plastic in river or not")
+st.set_page_config(layout="wide", page_title="Rio de Plástico")
+st.write("# Detectar se há plástico no rio ou não")
 
 @st.cache_data
 def load_model():
@@ -38,10 +38,10 @@ def get_pred_labels() -> dict:
     Method to get the predicted labels from text file
     '''
     LABELS = {
-        0: 'PLASTIC_BAG', 
-        1: 'PLASTIC_BOTTLE', 
-        2: 'OTHER_PLASTIC_WASTE', 
-        3: 'NOT_PLASTIC_WASTE'
+        0: 'SACO_PLASTICO', 
+        1: 'GARRAFA_PLASTICO', 
+        2: 'OUTRO_RESIDUO_PLASTICO', 
+        3: 'NAO_RESIDUO'
     }
     results = []
     # Reading the predicted labels.txt file
@@ -57,22 +57,24 @@ def get_pred_labels() -> dict:
     return count_labels
 
 with st.sidebar:
-    st.title("Plastic in River")
-    st.sidebar.write("Try uploading an image to predict whether there are any plastics \
-         (bags/bottles/other plastic items) in the image or not.")
+    st.title("Rio de Plástico")
+    st.sidebar.write("Tente enviar uma imagem para prever se há algum plástico \
+ (sacos/garrafas/outros itens de plástico) na imagem ou não.")
     with st.form("my_form"):
         if 'model' not in st.session_state:
-            with st.spinner('Loading the model, please wait...'):
+            with st.spinner('Carregando o modelo ...'):
                 # Loading and saving the model to session state
                 model = load_model()
                 st.session_state['model'] = model
-                success_msg = st.success('Successfully loaded the model!')
+                success_msg = st.success('Modelo carregado com sucesso!')
 
             time.sleep(2)
             success_msg.empty()
 
-        uploaded_image = st.file_uploader("Upload an Image", type=["png", "jpg", "jpeg"])
-        submitted = st.form_submit_button("Predict")
+        uploaded_image = st.file_uploader("Carregue uma Imagem", type=["png", "jpg", "jpeg"])
+        submitted = st.form_submit_button("Iniciar")
+        st.text("")
+        st.image('https://www.ictb.fiocruz.br/sites/default/files/logo.png')
 
 if not submitted or not uploaded_image:
     # Stopping the execution if no image is uploaded
@@ -92,4 +94,4 @@ else:
         for fname in os.listdir(del_dir):
             if fname.startswith("predict"):
                 shutil.rmtree(os.path.join(del_dir, fname))
-        st.warning("Something went wrong. Please reload the app.")
+        st.warning("Algo deu errado. Por favor, recarregue o aplicativo.")
